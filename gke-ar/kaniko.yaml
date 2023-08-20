@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kaniko
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:latest # executor:v1.9.1-debug
+    args: [ "--dockerfile=Dockerfile",
+            "--context=gs://$GCP_PROJECT_ID-$GCP_GKE/context.tar.gz",
+            "--destination=$GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_GKE", # replace with your dockerhub account
+            "--cache",
+            "--cache-repo=$GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_GKE",
+            "--cache-ttl=1h" ] 
+  restartPolicy: Never

@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kaniko
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:latest # executor:v1.9.1-debug
+    args: [ "--dockerfile=/workspace/Dockerfile",
+            "--context=dir://workspace",
+            "--destination=$DOCKERHUB_REGISTRY", # replace with your dockerhub account
+            "--cache",
+            "--cache-dir=/cache",
+            "--cache-ttl=1h" ] 
+    volumeMounts:
+      - name: kaniko-secret
+        mountPath: /kaniko/.docker
+      - name: dockerfile-storage
+        mountPath: /workspace
+      - name: kaniko-cache
+        mountPath: /cache
+  restartPolicy: Never
+  volumes:
+    - name: kaniko-secret
+      secret:
+        secretName: docker-credentials
+        items:
+          - key: .dockerconfigjson
+            path: config.json
+    - name: dockerfile-storage
+      persistentVolumeClaim:
+        claimName: dockerfile-claim
+    - name: kaniko-cache
+      persistentVolumeClaim:
+        claimName: kaniko-cache-claim

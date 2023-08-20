@@ -1,0 +1,28 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: kaniko-cache-volume
+  labels:
+    type: local
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadOnlyMany
+  hostPath:
+    path: /minikube-cache
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: kaniko-cache-claim
+spec:
+  storageClassName: local-storage
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 8Gi
